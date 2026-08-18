@@ -1,0 +1,18 @@
+{
+  "name": "linkedin-outreach-sync",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Qualify CRM leads with Claude, then push only the good ones into a LinkedIn outreach campaign, even when the outreach tool has no API. Uses Browserless to drive the tool's own web UI.",
+  "scripts": {
+    "fetch": "node --env-file=.env src/fetch-hubspot.mjs",
+    "classify": "node --env-file=.env src/classify-icp.mjs",
+    "export:new": "node src/export-new.mjs",
+    "push": "node --env-file=.env src/push-dripify.mjs",
+    "sync": "node --env-file=.env src/sync.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
+    "puppeteer-core": "^24.0.0"
+  }
+}

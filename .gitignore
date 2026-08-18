@@ -1,0 +1,12 @@
+node_modules/
+.env
+*.local
+.DS_Store
+
+# All local data artifacts (lead PII, classified output, dedupe ledger, exports)
+data/
+# ...except the bundled fake sample data, safe to commit
+!data/sample-leads.json
+
+# Outreach-tool session cookies (auth)
+dripify-cookies.json
