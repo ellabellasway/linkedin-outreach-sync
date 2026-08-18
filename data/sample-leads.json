@@ -1,0 +1,72 @@
+[
+  {
+    "id": "sample-1",
+    "url": "https://www.linkedin.com/in/jamie-rivera-example",
+    "firstName": "Jamie",
+    "lastName": "Rivera",
+    "title": "Backend Engineer",
+    "company": "Northwind Data Co",
+    "companyDomain": "northwinddata.example",
+    "companyIndustry": "Computer Software",
+    "companyEmployees": "45",
+    "companyRevenue": "",
+    "companyDescription": "Builds data pipeline tooling for mid-market SaaS companies.",
+    "companyCountry": "United States"
+  },
+  {
+    "id": "sample-2",
+    "url": "https://www.linkedin.com/in/priya-anand-example",
+    "firstName": "Priya",
+    "lastName": "Anand",
+    "title": "VP of Engineering",
+    "company": "Fenwick Analytics",
+    "companyDomain": "fenwickanalytics.example",
+    "companyIndustry": "Information Technology and Services",
+    "companyEmployees": "220",
+    "companyRevenue": "18000000",
+    "companyDescription": "AI-assisted analytics platform for e-commerce teams.",
+    "companyCountry": "United Kingdom"
+  },
+  {
+    "id": "sample-3",
+    "url": "https://www.linkedin.com/in/marcus-webb-example",
+    "firstName": "Marcus",
+    "lastName": "Webb",
+    "title": "Real Estate Agent",
+    "company": "Webb & Co Realty",
+    "companyDomain": "webbrealty.example",
+    "companyIndustry": "Real Estate",
+    "companyEmployees": "8",
+    "companyRevenue": "",
+    "companyDescription": "Residential real estate brokerage serving the Denver metro area.",
+    "companyCountry": "United States"
+  },
+  {
+    "id": "sample-4",
+    "url": "https://www.linkedin.com/in/lena-okafor-example",
+    "firstName": "Lena",
+    "lastName": "Okafor",
+    "title": "Founder & CTO",
+    "company": "Driftwork Labs",
+    "companyDomain": "driftworklabs.example",
+    "companyIndustry": "Computer Software",
+    "companyEmployees": "6",
+    "companyRevenue": "",
+    "companyDescription": "Early-stage devtools startup, workflow automation for engineering teams.",
+    "companyCountry": "Canada"
+  },
+  {
+    "id": "sample-5",
+    "url": "https://www.linkedin.com/in/tom-baxter-example",
+    "firstName": "Tom",
+    "lastName": "Baxter",
+    "title": "Account Executive",
+    "company": "Baxter Insurance Group",
+    "companyDomain": "baxterinsurance.example",
+    "companyIndustry": "Insurance",
+    "companyEmployees": "34",
+    "companyRevenue": "",
+    "companyDescription": "Independent insurance brokerage for small businesses.",
+    "companyCountry": "United States"
+  }
+]

@@ -3,8 +3,10 @@ node_modules/
 *.local
 .DS_Store
 
-# All local data artifacts (lead PII, classified output, dedupe ledger, exports)
-data/
+# All local data artifacts (lead PII, classified output, dedupe ledger, exports).
+# Note: "data/*" not "data/" — the latter would block git from ever looking
+# inside the directory, making the exception below silently ineffective.
+data/*
 # ...except the bundled fake sample data, safe to commit
 !data/sample-leads.json
 
