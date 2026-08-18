@@ -1,8 +1,10 @@
 # LinkedIn Outreach Sync
 
-Qualifies your CRM leads with Claude, then adds only the good ones to a
-LinkedIn outreach campaign, even though the outreach tool has no API to push
-leads in.
+Qualifies HubSpot leads with Claude, then pushes only the good-fit ones into
+a LinkedIn outreach campaign, even though the outreach tool has no API for
+adding leads. Built for growth/sales-ops people who want an ICP filter
+between a CRM list and a LinkedIn outreach tool, instead of dumping an
+entire list in and hoping the targeting was right.
 
 ## Why this exists
 
@@ -10,8 +12,9 @@ Plenty of LinkedIn outreach tools (this one was built against
 [Dripify](https://dripify.io)) only work **outbound** through Zapier: they can
 push data out after an invite, message, or reply, but there's no API and no
 Zapier action to push a *new lead in*. The only programmatic way in is to
-operate the tool's own web UI, which is what this does, via
-[Browserless](https://browserless.io).
+operate the tool's own web UI, which is what this does, via a remote headless
+Chrome connection (any hosted headless-Chrome/WebSocket provider works, or
+self-host your own).
 
 If your outreach tool already has a real "add lead" API, you don't need the
 browser-automation half of this at all, just swap `push.mjs` for a direct API
@@ -35,9 +38,9 @@ description are stronger, lower-risk signals than a scraped profile.
 
 | Stage | Script | Status |
 |---|---|---|
-| `npm run fetch` | `fetch-hubspot.mjs` | list membership + associated-company firmographics → `leads.json` |
+| `npm run fetch` | `fetch-hubspot.mjs` | list membership + associated-company firmographics saved to `leads.json` |
 | `npm run classify` | `classify-icp.mjs` | Claude Haiku, Batches API, structured JSON output |
-| `npm run push` | `push-dripify.mjs` | ⚠️ scaffold — auth and navigation work; the add-leads UI interaction (`TODO:UI`) is stubbed until mapped against a real logged-in session |
+| `npm run push` | `push-dripify.mjs` | scaffold: auth and navigation work, but the add-leads UI interaction (`TODO:UI`) is stubbed until mapped against a real logged-in session |
 | `npm run sync` | `sync.mjs` | runs all three in order |
 | `npm run export:new` | `export-new.mjs` | delta-only CSV of newly-qualified leads, for a manual weekly drop |
 
@@ -64,8 +67,26 @@ and a senior engineering leader at a data-analytics company should land
 `strong`/`possible`, a real-estate agent and an insurance account exec should
 land `weak`. Claude's judgment isn't a lookup table, so treat that as what the
 rubric is designed to produce, not a guarantee, and read the actual output
-rather than assuming it matched. That's the whole engine. Once you trust it,
-move on to your real data.
+rather than assuming it matched. That's the whole engine, sample mode runs it
+end to end on fake data so you can see it work before you touch anything real.
+Once you trust it, move on to your real data (step 1 below).
+
+Example output from `npm run classify` against the bundled sample data:
+
+```
+Classifying 5 leads
+Submitting batch…
+  batch msgbatch_01..., polling until complete
+  ended, done 5, errored 0, processing 0
+
+Results:
+  strong:   2
+  possible: 0
+  weak:     3
+
+2 qualify for the outreach campaign (tiers: strong, possible)
+Wrote data/classified.json
+```
 
 ### 1. Wire up your own CRM, model, and browser access
 
@@ -75,14 +96,14 @@ cp .env.example .env
 
 Fill in, in this order:
 
-1. **`HUBSPOT_TOKEN`** — HubSpot > Settings > Integrations > Private Apps,
+1. **`HUBSPOT_TOKEN`**: HubSpot > Settings > Integrations > Private Apps,
    with `crm.lists.read` and `crm.objects.contacts.read` scopes.
-2. **`HUBSPOT_LIST_ID`** — open the active list you want to pull from in
+2. **`HUBSPOT_LIST_ID`**: open the active list you want to pull from in
    HubSpot and copy its numeric ID out of the URL.
-3. **`ANTHROPIC_API_KEY`** — from the Anthropic Console.
-4. **`BROWSERLESS_WS`** — from your Browserless account dashboard, a
-   WebSocket URL with your token baked in.
-5. **`DRIPIFY_CAMPAIGN_URL`** — open the campaign in your outreach tool and
+3. **`ANTHROPIC_API_KEY`**: from the Anthropic Console.
+4. **`REMOTE_BROWSER_WS`**: a WebSocket URL from your headless-Chrome
+   provider (or a self-hosted instance), with your auth token baked in.
+5. **`DRIPIFY_CAMPAIGN_URL`**: open the campaign in your outreach tool and
    copy the URL.
 
 ### 2. Write your own ICP rubric
@@ -104,7 +125,7 @@ Export your outreach tool's session cookies into `dripify-cookies.json` (any
 name, update `DRIPIFY_COOKIES_FILE`). Stale cookies produce a clear "session
 expired" error rather than a silent failure.
 
-## ICP classification
+## ICP classification (HubSpot lead scoring with Claude)
 
 `classify-icp.mjs` runs each lead through `claude-haiku-4-5` with a forced
 JSON schema (`strong | possible | weak` plus role-fit, company-fit, and a

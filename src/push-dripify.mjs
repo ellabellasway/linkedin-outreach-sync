@@ -1,6 +1,7 @@
-// Sink half: connect to a Browserless-hosted Chrome, authenticate to the
-// outreach tool via injected session cookies (no password ever touches this
-// code), open the target campaign, and add the leads from data/leads.json.
+// Sink half: connect to a remote headless Chrome instance, authenticate to
+// the outreach tool via injected session cookies (no password ever touches
+// this code), open the target campaign, and add the leads from
+// data/leads.json.
 //
 // STATUS: the auth + navigation skeleton is real. The campaign "Add leads"
 // interaction (marked TODO:UI below) is stubbed until we map the tool's
@@ -12,15 +13,15 @@ import { readFile } from "node:fs/promises";
 import puppeteer from "puppeteer-core";
 import { QUALIFYING_TIERS } from "./icp.mjs";
 
-const WS = process.env.BROWSERLESS_WS;
+const WS = process.env.REMOTE_BROWSER_WS;
 const CAMPAIGN_URL = process.env.DRIPIFY_CAMPAIGN_URL;
 const COOKIES_FILE = process.env.DRIPIFY_COOKIES_FILE || "dripify-cookies.json";
 
-if (!WS) throw new Error("Missing BROWSERLESS_WS");
+if (!WS) throw new Error("Missing REMOTE_BROWSER_WS");
 if (!CAMPAIGN_URL) throw new Error("Missing DRIPIFY_CAMPAIGN_URL");
 
 // Only push ICP-qualified leads. Falls back to raw leads.json (no ICP screen)
-// only if classification hasn't been run — with a loud warning.
+// only if classification hasn't been run, with a loud warning.
 async function loadLeads() {
   try {
     const classified = JSON.parse(await readFile("data/classified.json", "utf8"));
@@ -30,13 +31,13 @@ async function loadLeads() {
       return qualified;
     }
   } catch {
-    // not classified yet — fall through
+    // not classified yet, fall through
   }
   const leads = JSON.parse(await readFile("data/leads.json", "utf8"));
   if (!Array.isArray(leads) || leads.length === 0) {
-    throw new Error("data/leads.json is empty — run `npm run fetch` first.");
+    throw new Error("data/leads.json is empty, run `npm run fetch` first.");
   }
-  console.warn("No data/classified.json — pushing UNSCREENED leads. Run `npm run classify` first to ICP-filter.");
+  console.warn("No data/classified.json, pushing UNSCREENED leads. Run `npm run classify` first to ICP-filter.");
   return leads;
 }
 
@@ -50,7 +51,7 @@ async function loadCookies() {
 async function main() {
   const leads = await loadLeads();
   const cookies = await loadCookies();
-  console.log(`Connecting to Browserless… (${leads.length} leads queued)`);
+  console.log(`Connecting to remote Chrome (${leads.length} leads queued)`);
 
   const browser = await puppeteer.connect({ browserWSEndpoint: WS });
   const page = await browser.newPage();
@@ -62,11 +63,11 @@ async function main() {
     // Guard: if cookies are stale we land on the login page.
     if (/\/login/i.test(page.url())) {
       throw new Error(
-        "Session expired — re-export cookies into " + COOKIES_FILE,
+        "Session expired, re-export cookies into " + COOKIES_FILE,
       );
     }
 
-    // TODO:UI — map these against the real add-leads flow of whatever
+    // TODO:UI, map these against the real add-leads flow of whatever
     // outreach tool you're driving:
     //   1. click the campaign's "Add leads" / "Add prospects" button
     //   2. choose "Import from a list of LinkedIn URLs" (or CSV upload)
@@ -75,7 +76,7 @@ async function main() {
     // Selectors and exact step order depend entirely on the tool, fill them
     // in once you've watched the real flow.
     throw new Error(
-      "Add-leads interaction not yet mapped — log into the outreach tool so the flow can be recorded.",
+      "Add-leads interaction not yet mapped, log into the outreach tool so the flow can be recorded.",
     );
   } finally {
     await page.close();

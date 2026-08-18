@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Qualify CRM leads with Claude, then push only the good ones into a LinkedIn outreach campaign, even when the outreach tool has no API. Uses Browserless to drive the tool's own web UI.",
+  "description": "Qualify CRM leads with Claude, then push only the good ones into a LinkedIn outreach campaign, even when the outreach tool has no API. Drives the tool's own web UI over a remote headless Chrome connection.",
   "scripts": {
     "fetch": "node --env-file=.env src/fetch-hubspot.mjs",
     "classify": "node --env-file=.env src/classify-icp.mjs",
